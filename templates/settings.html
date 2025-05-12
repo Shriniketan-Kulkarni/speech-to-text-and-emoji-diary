@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}Settings - LifeLog{% endblock %}
+
+{% block content %}
+<div class="settings-content">
+    <h1>Account Settings</h1>
+    
+    <div class="settings-section">
+        <h2>Profile Information</h2>
+        <form action="{{ url_for('settings') }}" method="POST">
+            <input type="hidden" name="action" value="update_profile">
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" value="{{ fullname }}" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="{{ username }}" disabled>
+                <small>Username cannot be changed</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Change Password</h2>
+        <form action="{{ url_for('settings') }}" method="POST">
+            <input type="hidden" name="action" value="change_password">
+            <div class="form-group">
+                <label for="current_password">Current Password</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Export Data</h2>
+        <p>Download all your diary entries as a JSON file.</p>
+        <form action="{{ url_for('settings') }}" method="POST">
+            <input type="hidden" name="action" value="export_data">
+            <button type="submit" class="btn btn-secondary">Export JSON</button>
+        </form>
+    </div>
+
+    <div class="settings-section">
+        <h2>Generate Reports</h2>
+        <p>Create PDF reports of your diary entries.</p>
+        <div class="report-options">
+            <form action="{{ url_for('generate_report') }}" method="POST" class="report-form">
+                <input type="hidden" name="report_type" value="all">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Complete Report
+                </button>
+            </form>
+            
+            <form action="{{ url_for('generate_report') }}" method="POST" class="report-form">
+                <input type="hidden" name="report_type" value="monthly">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calendar-alt"></i> Monthly Report
+                </button>
+            </form>
+            
+            <form action="{{ url_for('generate_report') }}" method="POST" class="report-form">
+                <input type="hidden" name="report_type" value="mood">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-smile"></i> Mood Analysis Report
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

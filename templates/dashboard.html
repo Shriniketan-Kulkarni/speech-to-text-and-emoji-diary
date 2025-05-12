@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - LifeLog{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <h1>Welcome back, {{ name.split()[0] }}!</h1>
+    
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Total Entries</h3>
+                <p id="entry-count">{{ entry_count }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Streak</h3>
+                <p id="streak-count">{{ streak }} days</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Avg. Length</h3>
+                <p id="avg-length">{{ avg_words }} words</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Overall Mood</h3>
+                <p id="mood-indicator">{{ overall_mood }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Entries and Mood Chart -->
+    <div class="dashboard-grid">
+        <div class="recent-entries">
+            <h2>Recent Entries</h2>
+            <ul class="entry-list" id="recent-entries-list">
+                {% if recent_entries %}
+                    {% for entry in recent_entries %}
+                        <li>
+                            <div class="entry-date">
+                                {{ entry.date|datetime('%b %d, %Y') }}
+                            </div>
+                            <div class="entry-preview">
+                                {{ entry.text[:50] + '...' if entry.text|length > 50 else entry.text }}
+                            </div>
+                            <div class="entry-mood {{ entry.mood|lower }}">
+                                <i class="fas fa-{{ 'smile' if entry.mood == 'Positive' else 'meh' if entry.mood == 'Neutral' else 'frown' }}"></i>
+                            </div>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="no-entries">No entries yet. Start writing in your diary!</li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <div class="mood-chart">
+            <h2>Daily Mood Trends</h2>
+            <div class="chart-container" id="mood-chart">
+                {% if mood_chart %}
+                    <img src="data:image/png;base64,{{ mood_chart }}" alt="Daily Mood Trends">
+                {% else %}
+                    <div class="chart-placeholder">
+                        <p>Your mood trends will appear here after more entries</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add any dashboard-specific JavaScript here
+</script>
+{% endblock %}

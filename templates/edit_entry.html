@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Entry - LifeLog{% endblock %}
+
+{% block content %}
+<div class="edit-entry-content">
+    <div class="section-header">
+        <h1>Edit Diary Entry</h1>
+    </div>
+    
+    <div class="diary-container">
+        <form action="{{ url_for('edit_entry', entry_id=entry.id) }}" method="POST">
+            <div class="form-group">
+                <label for="entry_date">Entry Date:</label>
+                <input type="date" id="entry_date" name="entry_date" value="{{ entry.date }}" required>
+            </div>
+            
+            <div class="diary-content">
+                <textarea id="diary-text" name="diary_text" placeholder="Start typing your thoughts..." required>{{ entry.text }}</textarea>
+                <div class="word-count"><span id="word-count">{{ entry.word_count }}</span> words</div>
+            </div>
+            
+            <div class="diary-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <a href="{{ url_for('view_entry', entry_id=entry.id) }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update word count on input
+    const diaryText = document.getElementById('diary-text');
+    const wordCount = document.getElementById('word-count');
+    
+    diaryText.addEventListener('input', function() {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        wordCount.textContent = words;
+    });
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Insights - LifeLog{% endblock %}
+
+{% block content %}
+<div class="insights-content">
+    <h1>Your Diary Insights</h1>
+    
+    <div class="insights-grid">
+        <div class="chart-card">
+            <h2>Daily Mood Trends</h2>
+            <div class="chart-container">
+                {% if mood_chart %}
+                    <img src="data:image/png;base64,{{ mood_chart }}" alt="Daily Mood Trends">
+                {% else %}
+                    <div class="chart-placeholder">
+                        <p>Your mood trends will appear here after more entries</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <h2>Word Frequency</h2>
+            <div class="chart-container">
+                {% if word_chart %}
+                    <img src="data:image/png;base64,{{ word_chart }}" alt="Word Frequency">
+                {% else %}
+                    <div class="chart-placeholder">
+                        <p>Your word frequency chart will appear here after more entries</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <h2>Writing Patterns</h2>
+            <div class="chart-container">
+                {% if patterns_chart %}
+                    <img src="data:image/png;base64,{{ patterns_chart }}" alt="Writing Patterns">
+                {% else %}
+                    <div class="chart-placeholder">
+                        <p>Your writing patterns will appear here after more entries</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

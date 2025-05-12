@@ -1,0 +1,160 @@
+{% extends "layout.html" %}
+
+{% block title %}My Diary - LifeLog{% endblock %}
+
+{% block content %}
+<div class="diary-content">
+    <div class="section-header">
+        <h1>New Diary Entry</h1>
+    </div>
+    
+    <div class="diary-container">
+        <form action="{{ url_for('diary') }}" method="POST">
+            <div class="form-group">
+                <label for="entry_date">Entry Date:</label>
+                <input type="date" id="entry_date" name="entry_date" value="{{ today_date }}" required>
+            </div>
+            
+            <div class="diary-controls">
+                <button class="control-btn" id="start-recording" type="button">
+                    <i class="fas fa-microphone"></i> Start Recording
+                </button>
+                <button class="control-btn" id="stop-recording" type="button" disabled>
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <div class="recording-indicator" id="recording-status">
+                    <span class="pulse-dot"></span> Not recording
+                </div>
+            </div>
+            
+            <div class="diary-content">
+                <textarea id="diary-text" name="diary_text" placeholder="Start recording or type your thoughts..." required></textarea>
+                <div class="word-count"><span id="word-count">0</span> words</div>
+            </div>
+            
+            <div class="diary-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Entry
+                </button>
+                <button type="button" class="btn btn-secondary" id="clear-entry">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update word count on input
+    const diaryText = document.getElementById('diary-text');
+    const wordCount = document.getElementById('word-count');
+    
+    diaryText.addEventListener('input', function() {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        wordCount.textContent = words;
+    });
+    
+    // Clear entry
+    const clearEntryBtn = document.getElementById('clear-entry');
+    clearEntryBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear the current entry?')) {
+            diaryText.value = '';
+            wordCount.textContent = '0';
+        }
+    });
+    
+    // Speech recognition
+    const startRecordingBtn = document.getElementById('start-recording');
+    const stopRecordingBtn = document.getElementById('stop-recording');
+    const recordingStatus = document.getElementById('recording-status');
+    
+    let recognition;
+    let isRecording = false;
+    
+    // Initialize speech recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        // Create speech recognition instance
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        
+        // Configure recognition
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        // Handle results
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            let finalTranscript = diaryText.value;
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                
+                if (event.results[i].isFinal) {
+                    finalTranscript += ' ' + transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            diaryText.value = finalTranscript;
+            updateWordCount();
+        };
+        
+        // Handle errors
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error', event.error);
+            stopRecording();
+        };
+        
+        // Handle end of recognition
+        recognition.onend = function() {
+            if (isRecording) {
+                recognition.start();
+            }
+        };
+    } else {
+        // Browser doesn't support speech recognition
+        startRecordingBtn.disabled = true;
+        startRecordingBtn.textContent = 'Speech recognition not supported';
+        recordingStatus.textContent = 'Your browser does not support speech recognition';
+    }
+    
+    // Start recording
+    startRecordingBtn.addEventListener('click', function() {
+        if (recognition) {
+            recognition.start();
+            isRecording = true;
+            
+            // Update UI
+            startRecordingBtn.disabled = true;
+            stopRecordingBtn.disabled = false;
+            recordingStatus.innerHTML = '<span class="pulse-dot"></span> Recording...';
+            recordingStatus.classList.add('recording');
+        }
+    });
+    
+    // Stop recording
+    stopRecordingBtn.addEventListener('click', function() {
+        if (recognition) {
+            recognition.stop();
+            isRecording = false;
+            
+            // Update UI
+            startRecordingBtn.disabled = false;
+            stopRecordingBtn.disabled = true;
+            recordingStatus.innerHTML = '<span class="pulse-dot"></span> Not recording';
+            recordingStatus.classList.remove('recording');
+        }
+    });
+    
+    function updateWordCount() {
+        const text = diaryText.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        wordCount.textContent = words;
+    }
+</script>
+{% endblock %}
+
